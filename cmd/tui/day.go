@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -30,6 +31,7 @@ var (
 	selectedStyle = lipgloss.NewStyle().
 			Inherit(eventStyle).
 			BorderLeftForeground(lipgloss.Color("#ff0000")).
+			BorderRightForeground(lipgloss.Color("#ff0000")).
 			Foreground(lipgloss.Color("#f57f52"))
 )
 
@@ -73,6 +75,11 @@ func (day *Day) String() string {
 		for i := day.renderfrom; i < day.renderfrom+day.renderamount; i++ {
 			name := renderEventDate(day.Events[i], eventWidth, day.IsSelected && i == day.Selected)
 			doc.WriteString(name + "\n")
+			if i == day.Selected {
+				if day.IsSelected {
+					log.Printf("Selected day: %d\n", day.Date)
+				}
+			}
 		}
 	}
 
@@ -94,21 +101,19 @@ func renderEventDate(event Event, width int, selected bool) string {
 
 func (d *Day) Up() {
 	if d.Selected > 0 {
-		half := d.renderamount / 2
-		// log.Printf("half: %d ; selected: %d, nr: %d, renderfrom: %d\n", half, d.Selected, d.NrEvents, d.renderfrom)
-		// log.Printf("%t, %t, %t\n", d.Selected > half, d.Selected < d.NrEvents-half, d.renderfrom != 0)
-		if d.Selected > half && d.Selected < d.NrEvents-half && d.renderfrom != 0 {
+		if d.Selected-1 == d.renderfrom && d.renderfrom != 0 {
 			d.renderfrom--
 		}
 		d.Selected--
 	}
 }
 func (d *Day) Down() {
+	log.Printf("S: %d\n", d.Selected)
 	if d.Selected+1 < d.NrEvents {
-		half := d.renderamount / 2
-		if d.Selected+1 < d.NrEvents-half && d.Selected+1 > half && d.renderfrom+1 < d.NrEvents {
+		if d.Selected+2 == d.renderfrom+d.renderamount && d.renderfrom+d.renderamount < d.NrEvents {
 			d.renderfrom++
 		}
 		d.Selected++
 	}
+	log.Printf("D: %d\n", d.Selected)
 }

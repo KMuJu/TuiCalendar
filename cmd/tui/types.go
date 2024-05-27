@@ -2,8 +2,6 @@ package tui
 
 import (
 	"time"
-
-	"github.com/charmbracelet/lipgloss/table"
 )
 
 type Day struct {
@@ -19,13 +17,12 @@ type Day struct {
 	renderamount int
 }
 
-type WeekTable struct {
-	Days      [7]Day
-	Nr        int // 1-52
-	Width     int
-	Height    int
-	CellWidth int
-	Table     table.Table
+type Week struct {
+	Days     [7]Day
+	Nr       int // 1-52
+	width    int
+	height   int
+	selected int
 }
 
 type Event struct {

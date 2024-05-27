@@ -1,13 +1,9 @@
-package mainutils
+package tui
 
-import (
-	"time"
+import "time"
 
-	"github.com/kmuju/TuiCalendar/cmd/tui"
-)
-
-func CreateEvents() []tui.Event {
-	events := []tui.Event{
+func CreateEvents() []Event {
+	events := []Event{
 		createEvent("First", "", 2024, 5, 29, 2, 30, 3, 10),
 		createEvent("Abasl", "", 2024, 5, 29, 3, 30, 7, 20),
 		createEvent("lascj", "", 2024, 5, 29, 9, 30, 10, 20),
@@ -20,8 +16,8 @@ func CreateEvents() []tui.Event {
 	return events
 }
 
-func createEvent(name, description string, year, month, date, fromhour, fromminute, tohour, tominute int) tui.Event {
-	return tui.Event{
+func createEvent(name, description string, year, month, date, fromhour, fromminute, tohour, tominute int) Event {
+	return Event{
 		Date:        date,
 		Name:        name,
 		Description: description,

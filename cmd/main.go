@@ -5,16 +5,16 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/kmuju/TuiCalendar/cmd/mainutils"
 	"github.com/kmuju/TuiCalendar/cmd/tui"
 )
 
 type model struct {
-	day tui.Day
+	day  tui.Day
+	week tui.Week
 }
 
 func initialModel() model {
-	events := mainutils.CreateEvents()
+	events := tui.CreateEvents()
 	day := tui.NewDay(
 		12,
 		events,
@@ -22,8 +22,10 @@ func initialModel() model {
 		40, 20,
 		2, 5,
 	)
+	week := tui.NewWeek(108, 0)
 	return model{
-		day: day,
+		day:  day,
+		week: week,
 	}
 }
 
@@ -38,24 +40,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "k", "up":
-			m.day.Up()
+			m.week.Up()
 		case "j", "down":
-			m.day.Down()
-			// case "h", "left":
-			// 	if m.cal.X > 0 {
-			// 		m.cal.X--
-			// 	}
-			// case "l", "right":
-			// 	if m.cal.X+1 < m.cal.Width {
-			// 		m.cal.X++
-			// 	}
+			m.week.Down()
+		case "h", "left":
+			m.week.Left()
+		case "l", "right":
+			m.week.Right()
 		}
 	}
 	return m, nil
 }
 
 func (m model) View() string {
-	return m.day.Render()
+	return m.week.Render()
 }
 
 func main() {
