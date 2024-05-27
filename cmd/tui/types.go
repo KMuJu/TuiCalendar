@@ -17,14 +17,6 @@ type Day struct {
 	renderamount int
 }
 
-type Week struct {
-	Days     [7]Day
-	Nr       int // 1-52
-	width    int
-	height   int
-	selected int
-}
-
 type Event struct {
 	Date        int
 	Description string
