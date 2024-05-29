@@ -5,14 +5,18 @@ import (
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/kmuju/TuiCalendar/cmd/tui"
 )
 
 type model struct {
+	cal tui.Calendar
 }
 
 func initialModel() model {
-	// events := tui.CreateEvents()
-	return model{}
+	events := tui.CreateEvents()
+	return model{
+		tui.NewCalendar(events, 20, 100, 40, 0, 5),
+	}
 }
 
 func (m model) Init() tea.Cmd {
@@ -25,10 +29,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
-			// case "k", "up":
-			// 	m.week.Up()
-			// case "j", "down":
-			// 	m.week.Down()
+		case "k", "up":
+			m.cal.Up()
+		case "j", "down":
+			m.cal.Down()
 			// case "h", "left":
 			// 	m.week.Left()
 			// case "l", "right":
@@ -39,7 +43,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	return "IMPLEMENT VIEW"
+	return m.cal.Render()
 }
 
 func main() {
