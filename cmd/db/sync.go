@@ -18,10 +18,15 @@ func Sync(db *sql.DB, newEvents []model.Event) error {
 		if slices.Contains(oldEvents, e) {
 			continue
 		}
-		fmt.Printf("Event is synced %v\n", e)
+		if e.Status == "cancelled" {
+			DeleteEvent(db, e.Id)
+			fmt.Printf("Deleting event: %+v\n", e)
+			continue
+		}
 		err = InsertEvent(db, e)
 		if err != nil {
 			fmt.Printf("Could not insert event: %v\n", e)
+			fmt.Println(err)
 		}
 	}
 	return nil

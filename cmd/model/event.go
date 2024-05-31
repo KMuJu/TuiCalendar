@@ -9,6 +9,7 @@ type Event struct {
 	Date        int
 	Name        string
 	Description string
+	Status      string
 	Start       time.Time
 	End         time.Time
 }

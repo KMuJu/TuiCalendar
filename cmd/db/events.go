@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/kmuju/TuiCalendar/cmd/model"
@@ -21,6 +22,7 @@ func InitDB() (*sql.DB, error) {
                 Date INTEGER NOT NULL,
                 Name TEXT NOT NULL,
                 Description TEXT,
+                Status TEXT NOT NULL,
                 Start TIMESTAMP NOT NULL,
                 End TIMESTAMP NOT NULL
             );
@@ -33,9 +35,10 @@ func InitDB() (*sql.DB, error) {
 }
 
 func GetEvents(db *sql.DB) ([]model.Event, error) {
-	query := `SELECT Id, Date, Name, Description, Start, End FROM Event`
+	query := `SELECT Id, Date, Name, Description, Status, Start, End FROM Event`
 	rows, err := db.Query(query)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -49,9 +52,11 @@ func GetEvents(db *sql.DB) ([]model.Event, error) {
 			&event.Date,
 			&event.Name,
 			&event.Description,
+			&event.Status,
 			&start,
 			&end,
 		); err != nil {
+			fmt.Println(err)
 			return nil, err
 		}
 
@@ -79,16 +84,34 @@ func GetEvents(db *sql.DB) ([]model.Event, error) {
 func InsertEvent(db *sql.DB, event model.Event) error {
 	query := `
     INSERT INTO Event
-    (Id, Date, Name, Description, Start, End)
-    VALUES (?, ?, ?, ?, ?, ?)`
+    (Id, Date, Name, Description, Status, Start, End)
+    VALUES (?, ?, ?, ?, ?, ?, ?)`
 	_, err := db.Exec(
 		query,
 		event.Id,
 		event.Date,
 		event.Name,
 		event.Description,
+		event.Status,
 		event.Start.Format(time.RFC3339),
 		event.End.Format(time.RFC3339),
 	)
 	return err
+}
+
+func DeleteEvent(db *sql.DB, eventID string) error {
+	query := "DELETE FROM events WHERE id = ?"
+
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return fmt.Errorf("failed to prepare statement: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(eventID)
+	if err != nil {
+		return fmt.Errorf("failed to execute statement: %v", err)
+	}
+
+	return nil
 }
