@@ -10,13 +10,13 @@ import (
 )
 
 func InitDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./events.db")
+	con, err := sql.Open("sqlite3", "./events.db")
 	if err != nil {
 		return nil, err
 	}
 
 	// Create the users table if it doesn't exist
-	_, err = db.Exec(`
+	_, err = con.Exec(`
             CREATE TABLE IF NOT EXISTS Event (
                 Id TEXT PRIMARY KEY,
                 Date INTEGER NOT NULL,
@@ -31,12 +31,12 @@ func InitDB() (*sql.DB, error) {
 		return nil, err
 	}
 
-	return db, nil
+	return con, nil
 }
 
-func GetEvents(db *sql.DB) ([]model.Event, error) {
+func GetEvents(con *sql.DB) ([]model.Event, error) {
 	query := `SELECT Id, Date, Name, Description, Status, Start, End FROM Event`
-	rows, err := db.Query(query)
+	rows, err := con.Query(query)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -81,12 +81,12 @@ func GetEvents(db *sql.DB) ([]model.Event, error) {
 	return events, nil
 }
 
-func InsertEvent(db *sql.DB, event model.Event) error {
+func InsertEvent(con *sql.DB, event model.Event) error {
 	query := `
     INSERT INTO Event
     (Id, Date, Name, Description, Status, Start, End)
     VALUES (?, ?, ?, ?, ?, ?, ?)`
-	_, err := db.Exec(
+	_, err := con.Exec(
 		query,
 		event.Id,
 		event.Date,
@@ -99,10 +99,10 @@ func InsertEvent(db *sql.DB, event model.Event) error {
 	return err
 }
 
-func DeleteEvent(db *sql.DB, eventID string) error {
-	query := "DELETE FROM events WHERE id = ?"
+func DeleteEvent(con *sql.DB, eventID string) error {
+	query := "DELETE FROM Event WHERE id = ?"
 
-	stmt, err := db.Prepare(query)
+	stmt, err := con.Prepare(query)
 	if err != nil {
 		return fmt.Errorf("failed to prepare statement: %v", err)
 	}

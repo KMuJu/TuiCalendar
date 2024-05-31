@@ -8,8 +8,8 @@ import (
 	"github.com/kmuju/TuiCalendar/cmd/model"
 )
 
-func Sync(db *sql.DB, newEvents []model.Event) error {
-	oldEvents, err := GetEvents(db)
+func Sync(con *sql.DB, newEvents []model.Event) error {
+	oldEvents, err := GetEvents(con)
 	if err != nil {
 		return err
 	}
@@ -19,14 +19,24 @@ func Sync(db *sql.DB, newEvents []model.Event) error {
 			continue
 		}
 		if e.Status == "cancelled" {
-			DeleteEvent(db, e.Id)
+			DeleteEvent(con, e.Id)
 			fmt.Printf("Deleting event: %+v\n", e)
 			continue
 		}
-		err = InsertEvent(db, e)
+		err = InsertEvent(con, e)
 		if err != nil {
 			fmt.Printf("Could not insert event: %v\n", e)
 			fmt.Println(err)
+		}
+	}
+	for _, e := range oldEvents {
+		if slices.Contains(newEvents, e) {
+			fmt.Printf("Fant event: %+v\n", e)
+			continue
+		}
+		err = DeleteEvent(con, e.Id)
+		if err != nil {
+			fmt.Printf("Could not delete:\n%s\n", err.Error())
 		}
 	}
 	return nil
