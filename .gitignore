@@ -25,3 +25,5 @@ debug.log
 
 # sqlite db
 events.db
+credentials.json
+token.json
