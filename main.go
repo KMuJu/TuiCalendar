@@ -28,11 +28,11 @@ func main() {
 			}
 			con, err := db.InitDB()
 			if err != nil {
-				return nil
+				return err
 			}
 			events, err := db.GetEvents(con)
 			if err != nil {
-				return nil
+				return err
 			}
 			slices.SortFunc(events, func(a, b model.Event) int {
 				if a.Start.Before(b.Start) {

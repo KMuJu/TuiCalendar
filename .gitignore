@@ -27,3 +27,7 @@ debug.log
 events.db
 credentials.json
 token.json
+
+#binaries
+main
+sync
