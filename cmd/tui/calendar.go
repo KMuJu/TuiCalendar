@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/kmuju/TuiCalendar/cmd/model"
 )
 
 const (
@@ -38,7 +39,7 @@ var (
 			Border(lipgloss.NormalBorder(), false, false, true, false)
 )
 
-func NewCalendar(events []Event, height, width, listWidth, renderFrom, renderAmount int) Calendar {
+func NewCalendar(events []model.Event, height, width, listWidth, renderFrom, renderAmount int) Calendar {
 	selected := renderFrom + renderAmount/2
 	return Calendar{
 		events:       events,
@@ -116,7 +117,7 @@ func renderDay(time time.Time, width, date int, month time.Month) string {
 		)
 }
 
-func renderEvent(event Event, width int, selected bool) string {
+func renderEvent(event model.Event, width int, selected bool) string {
 	style := lipgloss.NewStyle().Inherit(eventstyle)
 	if selected {
 		style.Inherit(selectedstyle)
@@ -131,7 +132,7 @@ func renderEvent(event Event, width int, selected bool) string {
 			))
 }
 
-func renderDescription(event Event, width int) string {
+func renderDescription(event model.Event, width int) string {
 	name := namestyle.
 		Width(width).
 		Render(lipgloss.PlaceVertical(3, lipgloss.Center, event.Name))

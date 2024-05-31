@@ -1,19 +1,9 @@
 package tui
 
-import (
-	"time"
-)
-
-type Event struct {
-	Date        int
-	Name        string
-	Description string
-	Start       time.Time
-	End         time.Time
-}
+import "github.com/kmuju/TuiCalendar/cmd/model"
 
 type Calendar struct {
-	events       []Event
+	events       []model.Event
 	height       int
 	width        int
 	listWidth    int
