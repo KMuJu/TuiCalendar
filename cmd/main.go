@@ -1,9 +1,18 @@
 package main
 
 import (
+	"github.com/kmuju/TuiCalendar/cmd/db"
 	"github.com/kmuju/TuiCalendar/cmd/tui"
 )
 
 func main() {
-	tui.Run()
+	con, err := db.InitDB()
+	if err != nil {
+		return
+	}
+	events, err := db.GetEvents(con)
+	if err != nil {
+		return
+	}
+	tui.Run(events)
 }
