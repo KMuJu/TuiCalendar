@@ -40,6 +40,7 @@ var (
 )
 
 func NewCalendar(events []model.Event, height, width, listWidth, renderFrom, renderAmount int) Calendar {
+	renderAmount = min(len(events), renderAmount)
 	selected := renderFrom + renderAmount/2
 	return Calendar{
 		events:       events,
