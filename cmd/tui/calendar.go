@@ -41,7 +41,10 @@ var (
 
 func NewCalendar(events []model.Event, height, width, listWidth, renderFrom, renderAmount int) Calendar {
 	renderAmount = min(len(events), renderAmount)
-	selected := renderFrom + renderAmount/2
+	// selected := renderFrom + renderAmount/2
+	// if renderAmount%2 == 0 {
+	// 	selected--
+	// }
 	return Calendar{
 		events:       events,
 		height:       height,
@@ -49,11 +52,14 @@ func NewCalendar(events []model.Event, height, width, listWidth, renderFrom, ren
 		listWidth:    listWidth,
 		renderFrom:   renderFrom,
 		renderAmount: renderAmount,
-		selected:     selected,
+		selected:     renderFrom,
 	}
 }
 
 func (c *Calendar) Render() string {
+	if len(c.events) == 0 {
+		return "Ingen Events"
+	}
 	listDoc := strings.Builder{}
 	descDoc := strings.Builder{}
 
@@ -111,6 +117,7 @@ func (c *Calendar) Down() {
 
 func renderDay(time time.Time, width, date int, month time.Month) string {
 	return daystyle.
+		Width(width).
 		Render(
 			lipgloss.Place(width, 1, lipgloss.Center, lipgloss.Center,
 				getNorwegianDay(int(time.Weekday()))+" "+fmt.Sprint(date)+". "+getNorwegianMonth(month),
@@ -120,6 +127,7 @@ func renderDay(time time.Time, width, date int, month time.Month) string {
 
 func renderEvent(event model.Event, width int, selected bool) string {
 	style := lipgloss.NewStyle().Inherit(eventstyle)
+	wrapping := lipgloss.NewStyle().Width(width - 2)
 	if selected {
 		style.Inherit(selectedstyle)
 	}
@@ -129,7 +137,11 @@ func renderEvent(event model.Event, width int, selected bool) string {
 	return style.
 		Render(
 			lipgloss.PlaceHorizontal(width-2, lipgloss.Center,
-				lipgloss.JoinVertical(lipgloss.Center, fromto, event.Name),
+				lipgloss.JoinVertical(
+					lipgloss.Center,
+					wrapping.Render(fromto),
+					wrapping.Render(event.Name),
+				),
 			))
 }
 
@@ -140,22 +152,28 @@ func renderDescription(event model.Event, width int) string {
 		// from :=
 	from := event.Start.Format("15:04")
 	to := event.End.Format("15:04")
-	fromto := datestyle.Render(from + " - " + to)
-	day := desctyle.
+	fromto := datestyle.Width(width).Render(from + " - " + to)
+	day := desctyle.Width(width).
 		Render(getNorwegianDay(int(event.Start.Weekday())))
 	desc := desctyle.Width(width).Render(event.Description)
-	return lipgloss.JoinVertical(lipgloss.Left, name, day, fromto, desc)
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		name,
+		day,
+		fromto,
+		desc,
+	)
 }
 
-func truncateString(input string, maxlen int) string {
-	if maxlen < 3 {
-		return "..."
-	}
-	if len(input) > maxlen {
-		return input[:maxlen-3] + "..."
-	}
-	return input
-}
+// func truncateString(input string, maxlen int) string {
+// 	if maxlen < 3 {
+// 		return strings.Repeat(".", maxlen)
+// 	}
+// 	if len(input) > maxlen {
+// 		return input[:maxlen-3] + "..."
+// 	}
+// 	return input
+// }
 
 func getNorwegianDay(day int) string {
 	switch day {
