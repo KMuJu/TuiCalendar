@@ -111,11 +111,19 @@ func GetEvents() []model.Event {
 func createEvents(e []*calendar.Event) []model.Event {
 	events := make([]model.Event, len(e))
 	for i, calendarEvent := range e {
-		start, err := time.Parse(time.RFC3339, calendarEvent.Start.DateTime)
+		starttime := calendarEvent.Start.DateTime
+		if starttime == "" {
+			starttime = calendarEvent.Start.Date
+		}
+		start, err := time.Parse(time.RFC3339, starttime)
 		if err != nil {
 			continue
 		}
-		end, err := time.Parse(time.RFC3339, calendarEvent.Start.DateTime)
+		endtime := calendarEvent.End.DateTime
+		if endtime == "" {
+			endtime = calendarEvent.End.Date
+		}
+		end, err := time.Parse(time.RFC3339, endtime)
 		if err != nil {
 			continue
 		}
