@@ -5,6 +5,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kmuju/TuiCalendar/cmd/model"
+	"golang.org/x/term"
 )
 
 type teaModel struct {
@@ -13,8 +14,13 @@ type teaModel struct {
 
 func initialModel(events []model.Event) teaModel {
 	// events := CreateEvents()
+	width, height, err := term.GetSize(0)
+	if err != nil {
+		return teaModel{}
+	}
+	renderAmount := height/eventHeight - 1
 	return teaModel{
-		NewCalendar(events, 20, 100, 40, 0, 5),
+		NewCalendar(events, height, width, min(width/3, 40), 0, renderAmount),
 	}
 }
 
@@ -52,7 +58,8 @@ func Run(events []model.Event) error {
 		return err
 	}
 	defer f.Close()
-	p := tea.NewProgram(initialModel(events), tea.WithAltScreen())
+	model := initialModel(events)
+	p := tea.NewProgram(model, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		return err

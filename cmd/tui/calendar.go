@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kmuju/TuiCalendar/cmd/model"
@@ -11,6 +12,7 @@ import (
 
 const (
 	descpadding = 2
+	eventHeight = 3
 )
 
 var (
@@ -127,7 +129,7 @@ func renderDay(time time.Time, width, date int, month time.Month) string {
 
 func renderEvent(event model.Event, width int, selected bool) string {
 	style := lipgloss.NewStyle().Inherit(eventstyle)
-	wrapping := lipgloss.NewStyle().Width(width - 2)
+	// wrapping := lipgloss.NewStyle().Width(width - 2)
 	if selected {
 		style.Inherit(selectedstyle)
 	}
@@ -139,8 +141,8 @@ func renderEvent(event model.Event, width int, selected bool) string {
 			lipgloss.PlaceHorizontal(width-2, lipgloss.Center,
 				lipgloss.JoinVertical(
 					lipgloss.Center,
-					wrapping.Render(fromto),
-					wrapping.Render(event.Name),
+					fromto,
+					event.Name,
 				),
 			))
 }
@@ -152,7 +154,10 @@ func renderDescription(event model.Event, width int) string {
 		// from :=
 	from := event.Start.Format("15:04")
 	to := event.End.Format("15:04")
-	fromto := datestyle.Width(width).Render(from + " - " + to)
+	fromtostring := from + " - " + to
+	fromto := datestyle.
+		Width(min(width, utf8.RuneCountInString(fromtostring))).
+		Render(fromtostring)
 	day := desctyle.Width(width).
 		Render(getNorwegianDay(int(event.Start.Weekday())))
 	desc := desctyle.Width(width).Render(event.Description)
