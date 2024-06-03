@@ -71,41 +71,46 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func GetEvents() []model.Event {
+func GetService() (*calendar.Service, error) {
 	ctx := context.Background()
 	b, err := os.ReadFile("credentials.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
-		return []model.Event{}
+		return &calendar.Service{}, err
 	}
 
 	// If modifying these scopes, delete your previously saved token.json.
 	config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
-		return []model.Event{}
+		return &calendar.Service{}, err
 	}
 	client := getClient(config)
 
 	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
-	if err != nil {
-		log.Printf("Unable to retrieve Calendar client: %v", err)
-		return []model.Event{}
-	}
+	return srv, err
+}
+
+func GetInfo(srv *calendar.Service) ([]*calendar.Event, error) {
+	// srv, err := GetService()
+	// if err != nil {
+	// 	log.Printf("Unable to retrieve Calendar client: %v", err)
+	// 	return []*calendar.Event{}, err
+	// }
 
 	t := time.Now().Format(time.RFC3339)
 	events, err := srv.Events.List("primary").ShowDeleted(false).
 		SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
-		return []model.Event{}
+		return []*calendar.Event{}, err
 	}
 	fmt.Println("Upcoming events:")
 	if len(events.Items) == 0 {
-		return []model.Event{}
+		return []*calendar.Event{}, nil
 	}
 
-	return createEvents(events.Items)
+	return events.Items, nil
 }
 
 func createEvents(e []*calendar.Event) []model.Event {

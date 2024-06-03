@@ -23,8 +23,32 @@ func main() {
 			if c.Bool("sync") {
 				// _, err := exec.Command("./sync").Output()
 				// return err
-				update()
-				return nil
+				srv, err := google.GetService()
+				if err != nil {
+					return err
+				}
+				con, err := db.InitDB()
+				if err != nil {
+					return err
+				}
+				google.Update(srv, con)
+				dbevents, err := db.GetEvents(con)
+				if err != nil {
+					fmt.Println(err)
+					return err
+				}
+				fmt.Printf("New events:\n")
+				for _, ev := range dbevents {
+					fmt.Printf("%v\n", ev)
+				}
+
+				// Testing delete of event
+				events, err := db.GetEvents(con)
+				if err != nil {
+					return err
+				}
+				err = google.Delete(srv, "primary", events[0].Id)
+				return err
 			}
 			con, err := db.InitDB()
 			if err != nil {
@@ -53,18 +77,4 @@ func main() {
 
 func update() {
 
-	con, err := db.InitDB()
-	if err != nil {
-		return
-	}
-	google.Update(con)
-	dbevents, err := db.GetEvents(con)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("New events:\n")
-	for _, ev := range dbevents {
-		fmt.Printf("%v\n", ev)
-	}
 }
