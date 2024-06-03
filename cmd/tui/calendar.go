@@ -72,7 +72,7 @@ func (c *Calendar) Render() string {
 		width := c.listWidth
 		lastDate := 0
 		lastMonth := 0
-		for i := c.renderFrom; i < c.renderFrom+c.renderAmount; i++ {
+		for i := c.renderFrom; i < min(len(c.events), c.renderFrom+c.renderAmount); i++ {
 			event := c.events[i]
 			_, month, date := event.Start.Date()
 			if lastMonth != int(month) || lastDate < date {
@@ -173,16 +173,6 @@ func renderDescription(event model.Event, width int) string {
 		desc,
 	)
 }
-
-// func truncateString(input string, maxlen int) string {
-// 	if maxlen < 3 {
-// 		return strings.Repeat(".", maxlen)
-// 	}
-// 	if len(input) > maxlen {
-// 		return input[:maxlen-3] + "..."
-// 	}
-// 	return input
-// }
 
 func getNorwegianDay(day int) string {
 	switch day {
