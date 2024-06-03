@@ -43,7 +43,7 @@ func TestNewCalendar(t *testing.T) {
 }
 
 func TestEmptyRender(t *testing.T) {
-	cal := NewCalendar([]model.Event{}, 0, 0, 0, 0, 0)
+	cal := NewCalendar([]model.Event{}, 0, 12, 0, 0, 0)
 	if cal.Render() != "Ingen Events" {
 		t.Fatalf("Did not detect empty events slice\n")
 	}
@@ -211,7 +211,7 @@ func TestUp(t *testing.T) {
 	}
 }
 
-func TestRenderEmptyCal(t *testing.T) {
+func TestRenderString(t *testing.T) {
 	events := []model.Event{
 		{Name: "Event 1", Start: time.Now(), End: time.Now().Add(time.Hour)},
 		{Name: "Event 2", Start: time.Now().Add(2 * time.Hour), End: time.Now().Add(3 * time.Hour)},
@@ -230,7 +230,7 @@ func TestRenderEmptyCal(t *testing.T) {
 }
 
 func TestRenderEvent(t *testing.T) {
-	width := 20
+	width := 10
 	event := model.Event{
 		Name:        "Event 2",
 		Start:       time.Now().Add(2 * time.Hour),
@@ -244,7 +244,11 @@ func TestRenderEvent(t *testing.T) {
 		t.Fatalf("No lines in renderEvent (%+v)\n", event)
 	}
 	if utf8.RuneCountInString(output[0]) != width {
-		t.Fatalf("Wrong width: Expected(%d), Got(%d)\n'%s'\n%s\n", width, len(output[0]), output[0], str)
+		t.Fatalf("Wrong width: Expected(%d), Got(%d)\n'%s'\n%s\n",
+			width,
+			utf8.RuneCountInString(output[0]),
+			output[0],
+			str)
 	}
 
 }
