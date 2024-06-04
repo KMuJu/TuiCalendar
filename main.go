@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"slices"
 
 	"github.com/kmuju/TuiCalendar/cmd/db"
 	"github.com/kmuju/TuiCalendar/cmd/google"
-	"github.com/kmuju/TuiCalendar/cmd/model"
 	"github.com/kmuju/TuiCalendar/cmd/tui"
 	"github.com/urfave/cli/v3"
 )
@@ -58,15 +56,6 @@ func main() {
 			if err != nil {
 				return err
 			}
-			slices.SortFunc(events, func(a, b model.Event) int {
-				if a.Start.Before(b.Start) {
-					return -1
-				}
-				if a.Start.After(b.Start) {
-					return 1
-				}
-				return 0
-			})
 			tui.Run(events)
 			return nil
 		},

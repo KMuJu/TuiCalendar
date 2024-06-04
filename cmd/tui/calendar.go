@@ -41,12 +41,22 @@ var (
 			Border(lipgloss.NormalBorder(), false, false, true, false)
 )
 
+/*
+Returns a Calendar
+Sorts the events based on start date
+renderAmount can is at max len(events)
+*/
 func NewCalendar(events []model.Event, height, width, listWidth, renderFrom, renderAmount int) Calendar {
 	renderAmount = min(len(events), renderAmount)
-	// selected := renderFrom + renderAmount/2
-	// if renderAmount%2 == 0 {
-	// 	selected--
-	// }
+	slices.SortFunc(events, func(a, b model.Event) int {
+		if a.Start.Before(b.Start) {
+			return -1
+		}
+		if a.Start.After(b.Start) {
+			return 1
+		}
+		return 0
+	})
 	return Calendar{
 		events:       events,
 		height:       height,
