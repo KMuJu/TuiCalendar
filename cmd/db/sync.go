@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/kmuju/TuiCalendar/cmd/model"
 )
@@ -29,9 +30,12 @@ func Sync(con *sql.DB, newEvents []model.Event) error {
 			fmt.Println(err)
 		}
 	}
+	now := time.Now()
 	for _, e := range oldEvents {
 		if slices.Contains(newEvents, e) {
-			fmt.Printf("Fant event: %+v\n", e)
+			continue
+		}
+		if e.Start.Before(now) {
 			continue
 		}
 		err = DeleteEvent(con, e.Id)

@@ -39,13 +39,6 @@ func main() {
 				for _, ev := range dbevents {
 					fmt.Printf("%v\n", ev)
 				}
-
-				// Testing delete of event
-				events, err := db.GetEvents(con)
-				if err != nil {
-					return err
-				}
-				err = google.Delete(srv, "primary", events[0].Id)
 				return err
 			}
 			con, err := db.InitDB()
