@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -68,6 +69,7 @@ func NewCalendar(events []model.Event, height, width, listWidth, renderFrom, ren
 	}
 }
 
+/*Renders calendar*/
 func (c *Calendar) Render() string {
 	if len(c.events) == 0 {
 		return lipgloss.NewStyle().
@@ -97,7 +99,7 @@ func (c *Calendar) Render() string {
 
 		{
 			event := c.events[c.selected]
-			descDoc.WriteString(renderDescription(event, c.width-c.listWidth))
+			descDoc.WriteString(renderEventPreview(event, c.width-c.listWidth))
 		}
 
 	}
@@ -108,10 +110,12 @@ func (c *Calendar) Render() string {
 	return lipgloss.JoinHorizontal(lipgloss.Top, listString, middle, descriptionString)
 }
 
+/*Same as c.Render()*/
 func (c *Calendar) String() string {
 	return c.Render()
 }
 
+/*Moves selected up and moves renderfrom if selected is at the top*/
 func (c *Calendar) Up() {
 	if c.selected > 0 {
 		if c.selected == c.renderFrom {
@@ -120,6 +124,8 @@ func (c *Calendar) Up() {
 		c.selected--
 	}
 }
+
+/*Moves selected down and moves renderfrom if selected is at the bottom*/
 func (c *Calendar) Down() {
 	if c.selected+1 < len(c.events) {
 		if c.selected == c.renderFrom+c.renderAmount-1 {
@@ -129,6 +135,25 @@ func (c *Calendar) Down() {
 	}
 }
 
+/*
+Render only events after time
+Returns true if there exists an event after t
+*/
+func (c *Calendar) RenderFrom(t time.Time) bool {
+	for i, e := range c.events {
+		if e.Start.After(t) {
+			c.renderFrom = i
+			return true
+		}
+	}
+	c.renderFrom = len(c.events)
+	return false
+}
+
+/*
+Render day with format Day Date. Month
+Used in the event list
+*/
 func renderDay(time time.Time, width, date int, month time.Month) string {
 	return daystyle.
 		Width(width).
@@ -139,6 +164,15 @@ func renderDay(time time.Time, width, date int, month time.Month) string {
 		)
 }
 
+/*
+Render event with format
+
+	Name
+
+# From - To
+
+Renders events for the event list
+*/
 func renderEvent(event model.Event, width int, selected bool) string {
 	style := lipgloss.NewStyle().Inherit(eventstyle)
 	// wrapping := lipgloss.NewStyle().Width(width - 2)
@@ -160,10 +194,14 @@ func renderEvent(event model.Event, width int, selected bool) string {
 			))
 }
 
-func renderDescription(event model.Event, width int) string {
+/*
+Render a preview of the event with information about it
+Used to preview event
+*/
+func renderEventPreview(event model.Event, width int) string {
 	name := namestyle.
 		Width(width - 2*descpadding).
-		Render(lipgloss.PlaceVertical(3, lipgloss.Center, event.Name))
+		Render(lipgloss.PlaceVertical(eventHeight, lipgloss.Center, event.Name))
 		// from :=
 	from := event.Start.Format("15:04")
 	to := event.End.Format("15:04")

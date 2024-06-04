@@ -262,7 +262,7 @@ func TestRenderDesc(t *testing.T) {
 		Description: "this is the desc for the test",
 	}
 
-	str := renderDescription(event, width)
+	str := renderEventPreview(event, width)
 	output := strings.Split(str, "\n")
 	if len(output) == 0 {
 		t.Fatalf("No lines in renderEvent (%+v)\n", event)
