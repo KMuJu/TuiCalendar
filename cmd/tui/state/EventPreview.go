@@ -51,9 +51,9 @@ func (self *EventPreview) Render(event model.Event) string {
 	from := event.Start.Format("15:04")
 	to := event.End.Format("15:04")
 	fromtostring := from + " - " + to
-	datewidth := min(width, utf8.RuneCountInString(fromtostring))
+	datewidth := min(width-2*descpadding, utf8.RuneCountInString(fromtostring))
 	fromto := datestyle.
-		Width(datewidth - 2*descpadding).
+		Width(datewidth).
 		Render(fromtostring)
 
 	day := desctyle.Width(width).
