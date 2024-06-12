@@ -2,10 +2,13 @@ package types
 
 import "github.com/kmuju/TuiCalendar/cmd/model"
 
-type State interface {
-	Render() string
+type FocusAble interface {
 	Focus()
 	FocusLost()
+}
+
+type State interface {
+	Render() string
 	HandleWidthChange(int)
 	HandleHeightChange(int)
 	HandleKey(string)
@@ -13,7 +16,6 @@ type State interface {
 
 type ListState interface {
 	State
-
 	Len() int
 	MoveStart(int)
 	Up()
