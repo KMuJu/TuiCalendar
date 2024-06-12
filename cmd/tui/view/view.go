@@ -14,23 +14,30 @@ type BaseView struct {
 	selected     int
 	eventlist    types.ListState
 	eventpreview *state.EventPreview
+	sidebar      *state.Sidebar
 	focusables   []types.FocusAble
 	focusLen     int
 }
 
 func NewBaseView(events []model.Event, width, height int) BaseView {
 	listwidth := width / 4
+	sidebarwidth := min(width/4, 22)
+	previewwidth := width - sidebarwidth - listwidth
+
 	eventlist := state.NewEventList(events, listwidth, height, 0, true)
-	eventpreview := state.NewPreviewer(width-listwidth, height)
+	eventpreview := state.NewPreviewer(previewwidth, height)
+	sidebar := state.NewSidebar(sidebarwidth, height)
 	focusables := []types.FocusAble{
 		eventlist,
 		eventpreview,
+		sidebar,
 	}
 	base := BaseView{
 		height:       height,
 		selected:     0,
 		eventlist:    eventlist,
 		eventpreview: eventpreview,
+		sidebar:      sidebar,
 		focusables:   focusables,
 		focusLen:     len(focusables),
 	}
@@ -41,10 +48,11 @@ func NewBaseView(events []model.Event, width, height int) BaseView {
 }
 
 func (self *BaseView) Render() string {
+	sidebar := self.sidebar.Render()
 	list := self.eventlist.Render()
 	preview := self.eventpreview.Render(self.eventlist.GetSelectedEvent())
-	middle := strings.Repeat(" ┃\n", self.height-1)
-	return lipgloss.JoinHorizontal(lipgloss.Top, list, middle, preview)
+	middle := strings.Repeat("┃\n", self.height-1)
+	return lipgloss.JoinHorizontal(lipgloss.Top, sidebar, middle, list, middle, preview)
 }
 
 func (self *BaseView) updateFocus() {

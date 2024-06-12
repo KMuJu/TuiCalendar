@@ -2,6 +2,7 @@ package state
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
@@ -133,4 +134,29 @@ func getNorwegianMonth(month time.Month) string {
 		return "desember"
 	}
 	return "Finnes ikke"
+}
+
+func renderHelpText(width int, selected bool) string {
+	help := []string{
+		"     q - quit ",
+		"ctrl-h - left ",
+		"ctrl-j - down ",
+		"ctrl-k - up   ",
+		"ctrl-l - right",
+	}
+	style := lipgloss.NewStyle().
+		Width(width).
+		Border(lipgloss.NormalBorder(), false, false, true, false)
+
+	if selected {
+		style = style.BorderForeground(selectedColor)
+	}
+	return style.
+		Render(
+			lipgloss.PlaceHorizontal(
+				width,
+				lipgloss.Center,
+				strings.Join(help, "\n"),
+			),
+		)
 }
