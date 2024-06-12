@@ -96,12 +96,10 @@ func (c *Calendar) Render() string {
 			// Render event
 			listDoc.WriteString(renderEvent(event, width, i == c.selected) + "\n")
 		}
-
-		{
-			event := c.events[c.selected]
-			descDoc.WriteString(renderEventPreview(event, c.width-c.listWidth))
-		}
-
+	}
+	{
+		event := c.events[c.selected]
+		descDoc.WriteString(renderEventPreview(event, c.width-c.listWidth))
 	}
 
 	listString := listDoc.String()

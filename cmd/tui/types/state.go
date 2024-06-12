@@ -8,6 +8,7 @@ type State interface {
 	FocusLost()
 	HandleWidthChange(int)
 	HandleHeightChange(int)
+	HandleKey(string)
 }
 
 type ListState interface {

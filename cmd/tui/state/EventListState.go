@@ -17,6 +17,18 @@ type EventListState struct {
 	selected int
 }
 
+func NewEventList(events []model.Event, width, height, start int, focus bool) EventListState {
+	return EventListState{
+		events:   events,
+		length:   len(events),
+		width:    width,
+		height:   height,
+		start:    start,
+		selected: start,
+		focus:    focus,
+	}
+}
+
 func (self *EventListState) Focus()     { self.focus = true }
 func (self *EventListState) FocusLost() { self.focus = false }
 
@@ -70,14 +82,29 @@ func (self *EventListState) MoveStart(delta int) {
 	}
 }
 
+func (self *EventListState) MoveSelected(delta int) {
+	if self.selected+delta < self.length && self.selected+delta >= 0 {
+		self.selected += delta
+	}
+}
+
 func (self *EventListState) Up() {
-	self.MoveStart(-1)
+	self.MoveSelected(-1)
 }
 
 func (self *EventListState) Down() {
-	self.MoveStart(1)
+	self.MoveSelected(1)
 }
 
 func (self *EventListState) GetSelectedEvent() model.Event {
 	return self.events[self.selected]
+}
+
+func (self *EventListState) HandleKey(input string) {
+	switch input {
+	case "k", "up":
+		self.Up()
+	case "j", "down":
+		self.Down()
+	}
 }

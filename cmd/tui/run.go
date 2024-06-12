@@ -5,11 +5,12 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/kmuju/TuiCalendar/cmd/model"
+	"github.com/kmuju/TuiCalendar/cmd/tui/view"
 	"golang.org/x/term"
 )
 
 type teaModel struct {
-	cal Calendar
+	view view.BaseView
 }
 
 func initialModel(events []model.Event) teaModel {
@@ -18,9 +19,10 @@ func initialModel(events []model.Event) teaModel {
 	if err != nil {
 		return teaModel{}
 	}
-	renderAmount := height/eventHeight - 1
+	// renderAmount := height/eventHeight - 1
 	return teaModel{
-		NewCalendar(events, height, width, min(width/3, 40), 0, renderAmount),
+		// NewCalendar(events, height, width, min(width/3, 40), 0, renderAmount),
+		view.NewBaseView(events, width, height),
 	}
 }
 
@@ -34,10 +36,8 @@ func (m teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
-		case "k", "up":
-			m.cal.Up()
-		case "j", "down":
-			m.cal.Down()
+		default:
+			m.view.HandleKey(msg.String())
 			// case "h", "left":
 			// 	m.week.Left()
 			// case "l", "right":
@@ -48,7 +48,7 @@ func (m teaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m teaModel) View() string {
-	return m.cal.Render()
+	return m.view.Render()
 }
 
 func Run(events []model.Event) error {

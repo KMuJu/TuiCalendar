@@ -7,33 +7,33 @@ import (
 	"github.com/kmuju/TuiCalendar/cmd/model"
 )
 
-type ListPreview struct {
-	event  model.Event
+type EventPreview struct {
 	width  int
 	height int
 	focus  bool
 }
 
-func (self *ListPreview) SetEvent(event model.Event) {
-	self.event = event
+func NewPreviewer(width, height int) EventPreview {
+	return EventPreview{width: width, height: height, focus: false}
 }
 
-func (self *ListPreview) Focus()     { self.focus = true }
-func (self *ListPreview) FocusLost() { self.focus = true }
+func (self *EventPreview) Focus()          { self.focus = true }
+func (self *EventPreview) FocusLost()      { self.focus = true }
+func (_ *EventPreview) HandleKey(_ string) {}
 
-func (self *ListPreview) HandleWidthChange(delta int) {
+func (self *EventPreview) HandleWidthChange(delta int) {
 	if self.width+delta > 0 {
 		self.width += delta
 	}
 }
 
-func (self *ListPreview) HandleHeightChange(delta int) {
+func (self *EventPreview) HandleHeightChange(delta int) {
 	if self.height+delta > 0 {
 		self.height += delta
 	}
 }
 
-func (self *ListPreview) Render() string {
+func (self *EventPreview) Render(event model.Event) string {
 	namestyle := lipgloss.NewStyle().Inherit(namestyle)
 	datestyle := lipgloss.NewStyle().Inherit(datestyle)
 
@@ -42,7 +42,6 @@ func (self *ListPreview) Render() string {
 		datestyle.BorderForeground(selectedColor)
 	}
 
-	event := self.event
 	width := self.width
 	name := namestyle.
 		Width(width - 2*descpadding).
