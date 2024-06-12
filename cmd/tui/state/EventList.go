@@ -29,8 +29,9 @@ func NewEventList(events []model.Event, width, height, start int, focus bool) *E
 	}
 }
 
-func (self *EventList) Focus()     { self.focus = true }
-func (self *EventList) FocusLost() { self.focus = false }
+func (self *EventList) Focus()             { self.focus = true }
+func (self *EventList) FocusLost()         { self.focus = false }
+func (_ *EventList) InnerFocus(_ int) bool { return false }
 
 func (self *EventList) Render() string {
 	listDoc := strings.Builder{}

@@ -17,9 +17,10 @@ func NewPreviewer(width, height int) *EventPreview {
 	return &EventPreview{width: width, height: height, focus: false}
 }
 
-func (self *EventPreview) Focus()          { self.focus = true }
-func (self *EventPreview) FocusLost()      { self.focus = false }
-func (_ *EventPreview) HandleKey(_ string) {}
+func (self *EventPreview) Focus()             { self.focus = true }
+func (self *EventPreview) FocusLost()         { self.focus = false }
+func (_ *EventPreview) InnerFocus(_ int) bool { return false }
+func (_ *EventPreview) HandleKey(_ string)    {}
 
 func (self *EventPreview) HandleWidthChange(delta int) {
 	if self.width+delta > 0 {
