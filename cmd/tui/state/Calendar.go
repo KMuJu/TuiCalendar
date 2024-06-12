@@ -87,9 +87,11 @@ func (self *Calendar) Render() string {
 		year, month, date := time.Now().Date()
 		s := lipgloss.NewStyle()
 		if year == self.year && int(month) == self.month && date == i {
-			s.Bold(true).Italic(true)
-		} else if i == self.selected {
-			s.Foreground(lipgloss.Color("#fb4934"))
+			s = s.Bold(true).Italic(true).Underline(true)
+			// s = s
+		}
+		if i == self.selected {
+			s = s.Foreground(lipgloss.Color("#fb4934"))
 		}
 
 		builder.WriteString(s.Render(lipgloss.PlaceHorizontal(3, lipgloss.Right, fmt.Sprint(i))))
@@ -103,16 +105,45 @@ func (self *Calendar) Render() string {
 }
 
 func NewCalendar(t time.Time, width, height int) Calendar {
-	year, month, _ := t.Date()
+	year, m, _ := t.Date()
+	month := int(m)
 	if isLeapYear(year) {
 		daysInMonth[2] = 29
 	}
+
+	calcCalendar(year, month)
+
 	return Calendar{
 		year:     year,
-		month:    int(month),
+		month:    month,
 		width:    width,
 		height:   height,
-		selected: 4,
+		selected: 1,
+
+		row: 0,
+		col: getDayOfWeek(year, month, 1),
+	}
+}
+
+func calcCalendar(year, month int) {
+	// dayFirst := getDayOfWeek(year, month, 1)
+	row := 0
+
+	cal = make([][]int, 1)
+	cal[0] = make([]int, 7)
+
+	// for i := 0; i < dayFirst; i++ {
+	// 	cal[0][i] = 0
+	// }
+
+	for i := 1; i <= daysInMonth[month]; i++ {
+		day := getDayOfWeek(year, month, i)
+		cal[row][day] = i
+
+		if day == 6 {
+			row++
+			cal = append(cal, make([]int, 7))
+		}
 	}
 }
 

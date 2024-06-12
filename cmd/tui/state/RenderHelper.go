@@ -153,8 +153,10 @@ func renderHelpText(width int, selected bool) string {
 	}
 	return style.
 		Render(
-			lipgloss.PlaceHorizontal(
+			lipgloss.Place(
 				width,
+				width/2,
+				lipgloss.Center,
 				lipgloss.Center,
 				strings.Join(help, "\n"),
 			),
