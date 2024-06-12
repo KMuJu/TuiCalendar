@@ -17,11 +17,66 @@ type Calendar struct {
 
 	focus    bool
 	selected int // date selected 1-31
+	col      int
+	row      int
 }
 
 var (
 	daysInMonth = [13]int{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+	cal         = [][]int{}
 )
+
+func (self *Calendar) up() {
+	if self.row != 0 {
+		self.row--
+	}
+	selected := cal[self.row][self.col]
+	if selected == 0 {
+		// Find the first element in the row
+		for i := 0; i < 7; i++ {
+			if cal[self.row][i] != 0 {
+				selected = cal[self.row][i]
+				break
+			}
+		}
+	}
+	self.selected = selected
+}
+
+func (self *Calendar) down() {
+	if self.row+1 != len(cal) {
+		self.row++
+	}
+	selected := cal[self.row][self.col]
+	if selected == 0 {
+		// Find the first element in the row
+		for i := 6; i <= 0; i-- {
+			if cal[self.row][i] != 0 {
+				selected = cal[self.row][i]
+				break
+			}
+		}
+	}
+	self.selected = selected
+}
+
+func (self *Calendar) left() {
+	if self.col != 0 {
+		if cal[self.row][self.col-1] != 0 {
+			self.col--
+			self.selected = cal[self.row][self.col]
+		}
+	}
+}
+
+func (self *Calendar) right() {
+	if self.col != 6 {
+		if cal[self.row][self.col+1] != 0 {
+			self.col++
+			self.selected = cal[self.row][self.col]
+		}
+	}
+}
 
 func (self *Calendar) Render() string {
 	builder := strings.Builder{}

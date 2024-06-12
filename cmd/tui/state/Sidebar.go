@@ -20,9 +20,21 @@ func NewSidebar(width, height int) *Sidebar {
 	}
 }
 
-func (self *Sidebar) Focus()                { self.focus = true }
-func (self *Sidebar) FocusLost()            { self.focus = false }
-func (self *Sidebar) InnerFocus(_ int) bool { return false }
+func (self *Sidebar) Focus()             { self.focus = true }
+func (self *Sidebar) FocusLost()         { self.focus = false }
+func (_ *Sidebar) InnerFocus(_ int) bool { return false }
+func (self *Sidebar) HandleKey(key string) {
+	switch key {
+	case "k", "up":
+		self.calendar.up()
+	case "j", "down":
+		self.calendar.down()
+	case "l", "right":
+		self.calendar.right()
+	case "h", "left":
+		self.calendar.left()
+	}
+}
 
 func (self *Sidebar) Render() string {
 	help := renderHelpText(self.width, self.focus)

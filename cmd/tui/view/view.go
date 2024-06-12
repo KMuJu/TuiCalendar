@@ -82,6 +82,6 @@ func (self *BaseView) HandleKey(key string) {
 		self.updateFocus()
 		break
 	default:
-		self.eventlist.HandleKey(key)
+		self.focusables[self.selected].HandleKey(key)
 	}
 }

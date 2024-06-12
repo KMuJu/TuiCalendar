@@ -6,6 +6,7 @@ type FocusAble interface {
 	InnerFocus(int) bool // Wether or not the struct has multiple focuses inside in direction specified
 	Focus()
 	FocusLost()
+	HandleKey(string)
 }
 
 type State interface {
