@@ -2,10 +2,13 @@ package state
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Calendar struct {
@@ -15,16 +18,21 @@ type Calendar struct {
 	width  int
 	height int
 
-	focus    bool
-	selected int // date selected 1-31
-	col      int
-	row      int
+	focus         bool
+	selected      int // date selected 1-31
+	col           int
+	row           int
+	daysWithEvent []int
 }
 
 var (
-	daysInMonth = [13]int{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-	cal         = [][]int{}
+	daysInMonth  = [13]int{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+	cal          = [][]int{}
+	eventcounter = 0
+	title        = cases.Title(language.Norwegian)
 )
+
+func (self *Calendar) GetSelected() int { return self.selected }
 
 func (self *Calendar) up() {
 	if self.row != 0 {
@@ -80,6 +88,10 @@ func (self *Calendar) right() {
 
 func (self *Calendar) Render() string {
 	builder := strings.Builder{}
+	builder.WriteString(lipgloss.PlaceHorizontal(self.width, lipgloss.Center,
+		title.String(getNorwegianMonth(time.Month(self.month))),
+	))
+	builder.WriteString("\n ma ti on to fr lø sø \n")
 	dayFirst := getDayOfWeek(self.year, self.month, 1)
 	builder.WriteString(strings.Repeat("   ", dayFirst))
 
@@ -93,8 +105,18 @@ func (self *Calendar) Render() string {
 		if i == self.selected {
 			s = s.Foreground(lipgloss.Color("#fb4934"))
 		}
+		// TODO: Does not work
+		if len(self.daysWithEvent) != 0 && i == self.daysWithEvent[eventcounter] {
+			log.Printf("event on day %d\n", i)
+			s = s.Background(lipgloss.Color("#458588"))
+			if eventcounter+1 != len(self.daysWithEvent) {
+				eventcounter++
+			}
+		}
 
-		builder.WriteString(s.Render(lipgloss.PlaceHorizontal(3, lipgloss.Right, fmt.Sprint(i))))
+		builder.WriteString(lipgloss.PlaceHorizontal(3, lipgloss.Right,
+			s.Render(fmt.Sprint(i)),
+		))
 
 		if getDayOfWeek(self.year, self.month, i) == 6 /* && i != daysInMonth[self.month]  */ {
 			builder.WriteString("\n")
@@ -104,7 +126,7 @@ func (self *Calendar) Render() string {
 	return builder.String()
 }
 
-func NewCalendar(t time.Time, width, height int) Calendar {
+func NewCalendar(t time.Time, width, height int, daysWithEvent []int) Calendar {
 	year, m, _ := t.Date()
 	month := int(m)
 	if isLeapYear(year) {
@@ -120,8 +142,9 @@ func NewCalendar(t time.Time, width, height int) Calendar {
 		height:   height,
 		selected: 1,
 
-		row: 0,
-		col: getDayOfWeek(year, month, 1),
+		row:           0,
+		col:           getDayOfWeek(year, month, 1),
+		daysWithEvent: daysWithEvent,
 	}
 }
 
