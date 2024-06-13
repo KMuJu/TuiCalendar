@@ -23,4 +23,5 @@ type ListState interface {
 	Up()
 	Down()
 	GetSelectedEvent() model.Event
+	SetEvents([]model.Event)
 }

@@ -3,6 +3,7 @@ package state
 import (
 	"strings"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/kmuju/TuiCalendar/cmd/model"
 )
 
@@ -32,15 +33,23 @@ func NewEventList(events []model.Event, width, height, start int, focus bool) *E
 func (self *EventList) Focus()             { self.focus = true }
 func (self *EventList) FocusLost()         { self.focus = false }
 func (_ *EventList) InnerFocus(_ int) bool { return false }
+func (self *EventList) SetEvents(events []model.Event) {
+	self.events = events
+	self.length = len(events)
+	self.selected = min(self.selected, self.length-1)
+}
 
 func (self *EventList) Render() string {
+	if self.length == 0 {
+		return lipgloss.NewStyle().Width(self.width).Render("")
+	}
 	listDoc := strings.Builder{}
 
 	width := self.width
 	lastDate := 0
 	lastMonth := 0
 	height := 0
-	for i := self.start; i < len(self.events); i++ {
+	for i := self.start; i < self.length; i++ {
 		if height+3 > self.height { // If the next event is outside height
 			break
 		}
@@ -100,6 +109,9 @@ func (self *EventList) Down() {
 }
 
 func (self *EventList) GetSelectedEvent() model.Event {
+	if self.selected >= self.length || self.selected < 0 {
+		return model.Event{}
+	}
 	return self.events[self.selected]
 }
 
