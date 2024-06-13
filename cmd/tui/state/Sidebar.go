@@ -11,9 +11,9 @@ type Sidebar struct {
 	focus    bool
 }
 
-func NewSidebar(width, height int) *Sidebar {
+func NewSidebar(width, height int, daysWithEvent []int) *Sidebar {
 	return &Sidebar{
-		calendar: NewCalendar(time.Now(), width, height),
+		calendar: NewCalendar(time.Now(), width, height, daysWithEvent),
 		width:    width,
 		height:   height,
 		focus:    false,
@@ -34,6 +34,10 @@ func (self *Sidebar) HandleKey(key string) {
 	case "h", "left":
 		self.calendar.left()
 	}
+}
+
+func (self *Sidebar) GetSelected() int {
+	return self.calendar.GetSelected()
 }
 
 func (self *Sidebar) Render() string {
