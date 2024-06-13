@@ -50,7 +50,7 @@ func (self *Calendar) down() {
 	selected := cal[self.row][self.col]
 	if selected == 0 {
 		// Find the first element in the row
-		for i := 6; i <= 0; i-- {
+		for i := 6; i >= 0; i-- {
 			if cal[self.row][i] != 0 {
 				selected = cal[self.row][i]
 				break
