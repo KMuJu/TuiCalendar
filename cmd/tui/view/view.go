@@ -2,7 +2,6 @@ package view
 
 import (
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/kmuju/TuiCalendar/cmd/model"
@@ -10,16 +9,11 @@ import (
 	"github.com/kmuju/TuiCalendar/cmd/tui/types"
 )
 
-var (
-	filter      = false
-	todaytoggle = false
-)
-
 type BaseView struct {
 	height          int
 	selected        int
 	eventController state.EventController
-	eventlist       types.ListState
+	eventlist       *state.EventList
 	eventpreview    *state.EventPreview
 	sidebar         *state.Sidebar
 	focusables      []types.FocusAble
@@ -33,16 +27,19 @@ func NewBaseView(events []model.Event, width, height int) BaseView {
 
 	eventlist := state.NewEventList(events, listwidth, height, 0, true)
 	eventpreview := state.NewPreviewer(previewwidth, height)
+	eventcontroller := state.EventController{Events: events}
 	sidebar := state.NewSidebar(sidebarwidth, height, []int{3, 4, 6, 12, 31})
+
 	focusables := []types.FocusAble{
 		eventlist,
 		eventpreview,
 		sidebar,
 	}
+
 	base := BaseView{
 		height:          height,
 		selected:        0,
-		eventController: state.EventController{Events: events},
+		eventController: eventcontroller,
 		eventlist:       eventlist,
 		eventpreview:    eventpreview,
 		sidebar:         sidebar,
@@ -90,33 +87,10 @@ func (self *BaseView) HandleKey(key string) {
 		self.updateFocus()
 		break
 	case " ":
-		if filter {
-			events := self.eventController.GetAllEvents()
-			self.eventlist.SetEvents(events)
-		} else {
-			self.eventlist.SetEvents(
-				self.eventController.GetEvents(
-					state.StartDayFilter(
-						self.sidebar.GetSelected(),
-					),
-				),
-			)
-		}
-		filter = !filter
+		state.ToggleSelectedDay(&self.eventController, self.eventlist, self.sidebar.GetSelected())
 		break
 	case "t":
-		if todaytoggle {
-			events := self.eventController.GetAllEvents()
-			self.eventlist.SetEvents(events)
-		} else {
-			date := time.Now().Day()
-			self.eventlist.SetEvents(
-				self.eventController.GetEvents(
-					state.StartDayFilter(date),
-				),
-			)
-		}
-		todaytoggle = !todaytoggle
+		state.ToggleTodayFilter(&self.eventController, self.eventlist)
 		break
 	default:
 		self.focusables[self.selected].HandleKey(key)
