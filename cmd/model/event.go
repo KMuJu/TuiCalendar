@@ -5,13 +5,13 @@ import (
 )
 
 type Event struct {
-	Id          string
-	Date        int
-	Name        string
-	Description string
-	Status      string
-	Start       time.Time
-	End         time.Time
+	Id          string    `json:"id"`
+	Date        int       `json:"date"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Status      string    `json:"status"`
+	Start       time.Time `json:"start"`
+	End         time.Time `json:"end"`
 }
 
 func (e Event) Equal(other Event) bool {
