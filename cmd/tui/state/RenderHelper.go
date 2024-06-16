@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	descpadding = 2
-	eventHeight = 3
+	previewpadding = 2
+	eventHeight    = 3
 )
 
 var (
@@ -32,13 +32,13 @@ var (
 	namestyle = lipgloss.NewStyle().
 			Bold(true).
 			Border(lipgloss.NormalBorder(), false, false, true, false).
-			Padding(0, descpadding)
+			Padding(0, previewpadding)
 
 	desctyle = lipgloss.NewStyle().
-			Padding(0, descpadding)
+			Padding(0, previewpadding)
 
 	datestyle = lipgloss.NewStyle().
-			Padding(0, descpadding).
+			Padding(0, previewpadding).
 			Border(lipgloss.NormalBorder(), false, false, true, false)
 )
 

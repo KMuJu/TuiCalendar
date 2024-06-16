@@ -37,6 +37,8 @@ func (self *EventPreview) HandleHeightChange(delta int) {
 func (self *EventPreview) Render(event model.Event) string {
 	namestyle := lipgloss.NewStyle().Inherit(namestyle)
 	datestyle := lipgloss.NewStyle().Inherit(datestyle)
+	namestyle = namestyle.Padding(0, previewpadding)
+	datestyle = datestyle.Padding(0, previewpadding)
 
 	if self.focus {
 		namestyle.BorderForeground(selectedColor)
@@ -45,20 +47,20 @@ func (self *EventPreview) Render(event model.Event) string {
 
 	width := self.width
 	name := namestyle.
-		Width(width - 2*descpadding).
+		Width(width - 2*previewpadding).
 		Render(lipgloss.PlaceVertical(eventHeight, lipgloss.Center, event.Name))
 
 	from := event.Start.Format("15:04")
 	to := event.End.Format("15:04")
 	fromtostring := from + " - " + to
-	datewidth := min(width-2*descpadding, utf8.RuneCountInString(fromtostring))
+	datewidth := min(width-2*previewpadding, utf8.RuneCountInString(fromtostring)+2*previewpadding)
 	fromto := datestyle.
 		Width(datewidth).
 		Render(fromtostring)
 
 	day := desctyle.Width(width).
 		Render(getNorwegianDay(int(event.Start.Weekday())))
-	desc := desctyle.Width(width - 2*descpadding).Render(event.Description)
+	desc := desctyle.Width(width - 2*previewpadding).Render(event.Description)
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
 		name,
