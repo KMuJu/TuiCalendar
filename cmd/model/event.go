@@ -16,5 +16,7 @@ type Event struct {
 
 func (e Event) Equal(other Event) bool {
 	return e.Id == other.Id &&
-		e.Name == other.Name
+		e.Name == other.Name &&
+		e.Start.Equal(other.Start) &&
+		e.End.Equal(other.End)
 }
