@@ -22,23 +22,24 @@ func ToggleTodayFilter(controller *EventController, list *EventList) {
 	if selectedday || today { // if another filter is active reseet
 		Reset(controller, list)
 	} else {
-		date := time.Now().Day()
+		year, m, date := time.Now().Date()
+		month := int(m)
 		list.SetEvents(
 			controller.GetEvents(
-				StartDayFilter(date),
+				StartDayFilter(year, month, date),
 			),
 		)
 	}
 	today = !today
 }
 
-func ToggleSelectedDay(controller *EventController, list *EventList, day int) {
+func ToggleSelectedDay(controller *EventController, list *EventList, year, month, day int) {
 	if selectedday || today {
 		Reset(controller, list)
 	} else {
 		list.SetEvents(
 			controller.GetEvents(
-				StartDayFilter(day),
+				StartDayFilter(year, month, day),
 			),
 		)
 	}

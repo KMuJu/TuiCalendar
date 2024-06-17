@@ -87,7 +87,8 @@ func (self *BaseView) HandleKey(key string) {
 		self.updateFocus()
 		break
 	case " ":
-		state.ToggleSelectedDay(&self.eventController, self.eventlist, self.sidebar.GetSelected())
+		// TODO: Fix
+		state.ToggleSelectedDay(&self.eventController, self.eventlist, 2024, 5, self.sidebar.GetSelected())
 		break
 	case "t":
 		state.ToggleTodayFilter(&self.eventController, self.eventlist)

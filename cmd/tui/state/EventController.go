@@ -1,6 +1,10 @@
 package state
 
-import "github.com/kmuju/TuiCalendar/cmd/model"
+import (
+	"time"
+
+	"github.com/kmuju/TuiCalendar/cmd/model"
+)
 
 type EventController struct {
 	Events []model.Event
@@ -24,23 +28,22 @@ func (self *EventController) GetEvents(filter EventFilter) []model.Event {
 	return newevents
 }
 
-func StartDayFilter(date int) EventFilter {
+func StartDayFilter(year, month, date int) EventFilter {
 	return func(event model.Event) bool {
-		_, _, d := event.Start.Date()
-		return d == date
+		y, m, d := event.Start.Date()
+		return d == date && y == year && int(m) == month
 	}
 }
 
-func AfterStartDayFilter(date int) EventFilter {
+func AfterDayFilter(year, month, date int) EventFilter {
 	return func(event model.Event) bool {
-		_, _, d := event.Start.Date()
-		return d >= date
+		y, m, d := event.Start.Date()
+		return d >= date && y >= year && int(m) >= month
 	}
 }
 
-func BetweenDaysFilter(start, end int) EventFilter {
+func BetweenTimesFilter(start, end time.Time) EventFilter {
 	return func(event model.Event) bool {
-		_, _, d := event.Start.Date()
-		return d >= start && d < end
+		return event.Start.After(start) && event.End.Before(end)
 	}
 }
